@@ -7,33 +7,35 @@ const path = require("path");
 const rateLimit = require("./middleware/rateLimit");
 require('dotenv').config();
 
- 
+
 
 const userRoutes = require('./routes/user');
-const saucesRoutes = require('./routes/sauces'); 
+const saucesRoutes = require('./routes/sauces');
 
 
 mongoose.connect(process.env.DB, //Très important pour masquer son identifiant et mot de passe MongoDB!
 
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-   const app = express();
+const app = express();
 
 
 
 app.use(rateLimit);  // Pour empêcher les attaques brutes
-  app.use(helmet()); //Tous les éléments plus bas sont intégrés à helmet mais cela permet de savoir exactement de quoi helmet protège
-  app.use(helmet.hidePoweredBy()); //On cache le powered by Express dans chaque entête de requête
-  app.use(helmet.frameguard({action:'deny'})); // On empêche le click jacking 
-  app.use(helmet.xssFilter({})); // On prévient les attaques xss
-  app.use(helmet.noSniff()); // On empêche le navigateur de contourner l'entête Content-Type
-  app.use(helmet.ieNoOpen()); //Empêche IE d'éxécuter des téléchargements provenant de page potentiellement malveillante 
-  
+app.use(helmet()); //Tous les éléments plus bas sont intégrés à helmet mais cela permet de savoir exactement de quoi helmet protège
+app.use(helmet.hidePoweredBy()); //On cache le powered by Express dans chaque entête de requête
+app.use(helmet.frameguard({ action: 'deny' })); // On empêche le click jacking 
+app.use(helmet.xssFilter({})); // On prévient les attaques xss
+app.use(helmet.noSniff()); // On empêche le navigateur de contourner l'entête Content-Type
+app.use(helmet.ieNoOpen()); //Empêche IE d'éxécuter des téléchargements provenant de page potentiellement malveillante 
 
- app.use((req, res, next) => {
+
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -54,9 +56,9 @@ app.use('/images', express.static(path.join(__dirname, 'images'))); // On récup
 
 //Routes authentification et sauces 
 
-app.use('/api/auth',userRoutes);
-app.use('/api/sauces',saucesRoutes);
+app.use('/api/auth', userRoutes);
+app.use('/api/sauces', saucesRoutes);
 
- 
+
 
 module.exports = app;
