@@ -4,12 +4,13 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require("path");
+const rateLimit = require("./middleware/rateLimit");
 require('dotenv').config();
 
  
 
 const userRoutes = require('./routes/user');
-const saucesRoutes = require('./routes/sauces');
+const saucesRoutes = require('./routes/sauces'); 
 
 
 mongoose.connect(process.env.DB, //Très important pour masquer son identifiant et mot de passe MongoDB!
@@ -23,7 +24,7 @@ mongoose.connect(process.env.DB, //Très important pour masquer son identifiant 
 
 
 
-
+app.use(rateLimit);  // Pour empêcher les attaques brutes
   app.use(helmet()); //Tous les éléments plus bas sont intégrés à helmet mais cela permet de savoir exactement de quoi helmet protège
   app.use(helmet.hidePoweredBy()); //On cache le powered by Express dans chaque entête de requête
   app.use(helmet.frameguard({action:'deny'})); // On empêche le click jacking 
